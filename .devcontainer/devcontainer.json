@@ -1,0 +1,14 @@
+{
+    "name": "Go Build Info",
+    "image": "ghcr.io/bartventer/devcontainer-images/base-archlinux:latest",
+    "features": {
+        "ghcr.io/bartventer/arch-devcontainer-features/go:latest": {
+            "installGoReleaser": true
+        }
+    },
+    "mounts": [
+    "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.vscode-server,target=/home/vscode/.vscode-server-insiders/extensions,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.config/gh,target=/home/vscode/.config/gh,type=bind,consistency=ro"
+  ]
+}
