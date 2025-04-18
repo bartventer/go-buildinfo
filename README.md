@@ -1,3 +1,8 @@
+[![Go Reference](https://pkg.go.dev/badge/github.com/bartventer/go-buildinfo.svg)](https://pkg.go.dev/github.com/bartventer/go-buildinfo)
+[![Go Report Card](https://goreportcard.com/badge/github.com/bartventer/go-buildinfo)](https://goreportcard.com/report/github.com/bartventer/go-buildinfo)
+[![Test](https://github.com/bartventer/go-buildinfo/actions/workflows/default.yml/badge.svg)](https://github.com/bartventer/go-buildinfo/actions/workflows/default.yml)
+[![codecov](https://codecov.io/github/bartventer/go-buildinfo/graph/badge.svg?token=xkncFVoRsX)](https://codecov.io/github/bartventer/go-buildinfo)
+
 # go-buildinfo
 
 A lightweight Go module for capturing and displaying build-time and runtime metadata, including version, commit, build date, and custom application details.
