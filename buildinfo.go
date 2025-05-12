@@ -40,67 +40,83 @@ type Info struct {
 	Date      string
 	TreeState string
 	Project   Project
-	runtime   runtimeEnv
+	runtime   *runtimeEnv
 }
 
-type Option func(*Info)
+type Options struct {
+	*Info
+	DisableRuntime bool
+}
+
+type Option func(*Options)
 
 func WithVersion(version string) Option {
-	return func(info *Info) {
-		info.Version = version
+	return func(opts *Options) {
+		opts.Version = version
 	}
 }
 
 func WithCommit(commit string) Option {
-	return func(info *Info) {
-		info.Commit = commit
+	return func(opts *Options) {
+		opts.Commit = commit
 	}
 }
 
 func WithDate(date string) Option {
-	return func(info *Info) {
-		info.Date = date
+	return func(opts *Options) {
+		opts.Date = date
 	}
 }
 
 func WithTreeState(treeState string) Option {
-	return func(info *Info) {
-		info.TreeState = treeState
+	return func(opts *Options) {
+		opts.TreeState = treeState
 	}
 }
 
 func WithProject(name, desc, url string) Option {
-	return func(info *Info) {
-		info.Project.Name = name
-		info.Project.Desc = desc
-		info.Project.URL = url
+	return func(opts *Options) {
+		opts.Project.Name = name
+		opts.Project.Desc = desc
+		opts.Project.URL = url
 	}
 }
 
 func WithASCIILogo(logo string) Option {
-	return func(info *Info) {
-		info.Project.ASCIILogo = logo
+	return func(opts *Options) {
+		opts.Project.ASCIILogo = logo
+	}
+}
+
+func WithDisableRuntime() Option {
+	return func(opts *Options) {
+		opts.DisableRuntime = true
 	}
 }
 
 // New creates a new Info instance with the provided options.
 func New(opts ...Option) *Info {
-	info := new(Info)
+	options := &Options{Info: new(Info)}
 	for _, opt := range opts {
-		opt(info)
+		opt(options)
 	}
 
-	info.Version = cmp.Or(info.Version, "dev")
-	info.Commit = cmp.Or(info.Commit, "none")
-	info.Date = cmp.Or(info.Date, "unknown")
-	info.TreeState = cmp.Or(info.TreeState, "none")
-	bi, _ := debug.ReadBuildInfo()
-	info.runtime = runtimeEnv{
-		Goos:      runtime.GOOS,
-		Goarch:    runtime.GOARCH,
-		Compiler:  runtime.Compiler,
-		GoVersion: bi.GoVersion,
-		ModuleSum: cmp.Or(bi.Main.Sum, "none"),
+	info := &Info{
+		Version:   cmp.Or(options.Version, "dev"),
+		Commit:    cmp.Or(options.Commit, "none"),
+		Date:      cmp.Or(options.Date, "unknown"),
+		TreeState: cmp.Or(options.TreeState, "none"),
+		Project:   options.Project,
+	}
+	if !options.DisableRuntime {
+		bi, _ := debug.ReadBuildInfo()
+		info.runtime = &runtimeEnv{
+			Goos:      runtime.GOOS,
+			Goarch:    runtime.GOARCH,
+			Compiler:  runtime.Compiler,
+			GoVersion: bi.GoVersion,
+			ModuleSum: cmp.Or(bi.Main.Sum, "none"),
+		}
 	}
 
 	return info
@@ -123,10 +139,13 @@ func (i *Info) String() string {
 	_, _ = fmt.Fprintf(w, "Commit\t%s\n", i.Commit)
 	_, _ = fmt.Fprintf(w, "Date\t%s\n", i.Date)
 	_, _ = fmt.Fprintf(w, "TreeState\t%s\n", i.TreeState)
-	_, _ = fmt.Fprintf(w, "GoVersion\t%s\n", i.runtime.GoVersion)
-	_, _ = fmt.Fprintf(w, "Compiler\t%s\n", i.runtime.Compiler)
-	_, _ = fmt.Fprintf(w, "Platform\t%s\n", i.runtime.Platform())
-	_, _ = fmt.Fprintf(w, "ModuleSum\t%s\n", i.runtime.ModuleSum)
+
+	if i.runtime != nil {
+		_, _ = fmt.Fprintf(w, "GoVersion\t%s\n", i.runtime.GoVersion)
+		_, _ = fmt.Fprintf(w, "Compiler\t%s\n", i.runtime.Compiler)
+		_, _ = fmt.Fprintf(w, "Platform\t%s\n", i.runtime.Platform())
+		_, _ = fmt.Fprintf(w, "ModuleSum\t%s\n", i.runtime.ModuleSum)
+	}
 	_ = w.Flush()
 
 	return sb.String()
