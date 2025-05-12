@@ -1,9 +1,8 @@
 package gobuildinfo
 
 import (
+	"cmp"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNew(t *testing.T) {
@@ -88,8 +87,41 @@ func TestNew(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := New(tt.options...)
-			assert.NotNil(t, got)
-			assert.EqualExportedValues(t, tt.expected, got)
+			if got == nil {
+				t.Errorf("New() = nil, want %v", tt.expected)
+				return
+			}
+			assertEqual(t, tt.expected.Version, got.Version)
+			assertEqual(t, tt.expected.Version, got.Version)
+			assertEqual(t, tt.expected.Commit, got.Commit)
+			assertEqual(t, tt.expected.Date, got.Date)
+			assertEqual(t, tt.expected.TreeState, got.TreeState)
+
+			assertEqual(t, tt.expected.Project.Name, got.Project.Name)
+			assertEqual(t, tt.expected.Project.Desc, got.Project.Desc)
+			assertEqual(t, tt.expected.Project.URL, got.Project.URL)
+			assertEqual(t, tt.expected.Project.ASCIILogo, got.Project.ASCIILogo)
+
+			assertNotEmpty(t, got.runtime.Goos)
+			assertNotEmpty(t, got.runtime.Goarch)
+			assertNotEmpty(t, got.runtime.Compiler)
+			assertNotEmpty(t, got.runtime.GoVersion)
+			assertNotEmpty(t, got.runtime.ModuleSum)
 		})
+	}
+}
+
+func assertNotEmpty[T cmp.Ordered](t *testing.T, value T) {
+	t.Helper()
+	var zero T
+	if cmp.Compare(value, zero) == 0 {
+		t.Errorf("expected non-empty value, got %v", value)
+	}
+}
+
+func assertEqual[T cmp.Ordered](t *testing.T, expected, actual T) {
+	t.Helper()
+	if cmp.Compare(expected, actual) != 0 {
+		t.Errorf("expected %v, got %v", expected, actual)
 	}
 }
