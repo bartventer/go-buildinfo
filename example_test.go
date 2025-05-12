@@ -1,12 +1,16 @@
 package gobuildinfo
 
 import (
-	_ "embed"
 	"fmt"
 )
 
-//go:embed testdata/logo.txt
-var logo string
+const logo = `
+_|                  _|  _|        _|  _|                _|_|
+_|_|_|    _|    _|      _|    _|_|_|      _|_|_|      _|        _|_|
+_|    _|  _|    _|  _|  _|  _|    _|  _|  _|    _|  _|_|_|_|  _|    _|
+_|    _|  _|    _|  _|  _|  _|    _|  _|  _|    _|    _|      _|    _|
+_|_|_|      _|_|_|  _|  _|    _|_|_|  _|  _|    _|    _|        _|_|
+`
 
 func ExampleInfo_String() {
 	info := New(

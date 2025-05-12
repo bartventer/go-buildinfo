@@ -111,6 +111,13 @@ func TestNew(t *testing.T) {
 	}
 }
 
+func TestInfo_String_withoutRuntime(t *testing.T) {
+	info := New(WithDisableRuntime())
+	if info.runtime != nil {
+		t.Errorf("expected runtime to be nil, got %v", info.runtime)
+	}
+}
+
 func assertNotEmpty[T cmp.Ordered](t *testing.T, value T) {
 	t.Helper()
 	var zero T
