@@ -1,7 +1,9 @@
 package gobuildinfo
 
 import (
+	"bytes"
 	"cmp"
+	"fmt"
 	"testing"
 )
 
@@ -111,11 +113,21 @@ func TestNew(t *testing.T) {
 	}
 }
 
-func TestInfo_String_withoutRuntime(t *testing.T) {
-	info := New(WithDisableRuntime())
-	if info.runtime != nil {
-		t.Errorf("expected runtime to be nil, got %v", info.runtime)
-	}
+func TestInfo_String_Runtime(t *testing.T) {
+	info := New()
+	info.runtime.GoVersion = "go1.24.2"
+	expected := `Version    dev
+Commit     none
+Date       unknown
+TreeState  none
+GoVersion  go1.24.2
+Compiler   gc
+Platform   linux/amd64
+ModuleSum  none
+`
+	var buf bytes.Buffer
+	fmt.Fprint(&buf, info.String())
+	assertEqual(t, expected, buf.String())
 }
 
 func assertNotEmpty[T cmp.Ordered](t *testing.T, value T) {
