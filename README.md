@@ -20,7 +20,6 @@ package main
 
 import (
     "fmt"
-    "os"
 
     gobuildinfo "github.com/bartventer/go-buildinfo"
 )
