@@ -134,16 +134,16 @@ func (i *Info) String() string {
 	}
 
 	w := tabwriter.NewWriter(&sb, 0, 0, 2, ' ', 0)
-	_, _ = fmt.Fprintf(w, "Version\t%s\n", i.Version)
-	_, _ = fmt.Fprintf(w, "Commit\t%s\n", i.Commit)
-	_, _ = fmt.Fprintf(w, "Date\t%s\n", i.Date)
-	_, _ = fmt.Fprintf(w, "TreeState\t%s\n", i.TreeState)
+	_, _ = fmt.Fprintf(w, "Version:\t%s\n", i.Version)
+	_, _ = fmt.Fprintf(w, "Commit:\t%s\n", i.Commit)
+	_, _ = fmt.Fprintf(w, "Date:\t%s\n", i.Date)
+	_, _ = fmt.Fprintf(w, "TreeState:\t%s\n", i.TreeState)
 
 	if i.runtime != nil {
-		_, _ = fmt.Fprintf(w, "GoVersion\t%s\n", i.runtime.GoVersion)
-		_, _ = fmt.Fprintf(w, "Compiler\t%s\n", i.runtime.Compiler)
-		_, _ = fmt.Fprintf(w, "Platform\t%s\n", i.runtime.Platform())
-		_, _ = fmt.Fprintf(w, "ModuleSum\t%s\n", i.runtime.ModuleSum)
+		_, _ = fmt.Fprintf(w, "GoVersion:\t%s\n", i.runtime.GoVersion)
+		_, _ = fmt.Fprintf(w, "Compiler:\t%s\n", i.runtime.Compiler)
+		_, _ = fmt.Fprintf(w, "Platform:\t%s\n", i.runtime.Platform())
+		_, _ = fmt.Fprintf(w, "ModuleSum:\t%s\n", i.runtime.ModuleSum)
 	}
 	_ = w.Flush()
 

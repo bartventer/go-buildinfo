@@ -116,14 +116,14 @@ func TestNew(t *testing.T) {
 func TestInfo_String_Runtime(t *testing.T) {
 	info := New()
 	info.runtime.GoVersion = "go1.24.2"
-	expected := `Version    dev
-Commit     none
-Date       unknown
-TreeState  none
-GoVersion  go1.24.2
-Compiler   gc
-Platform   linux/amd64
-ModuleSum  none
+	expected := `Version:    dev
+Commit:     none
+Date:       unknown
+TreeState:  none
+GoVersion:  go1.24.2
+Compiler:   gc
+Platform:   linux/amd64
+ModuleSum:  none
 `
 	var buf bytes.Buffer
 	fmt.Fprint(&buf, info.String())
