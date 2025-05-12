@@ -7,7 +7,6 @@ package gobuildinfo
 
 import (
 	"cmp"
-	_ "embed"
 	"fmt"
 	"runtime"
 	"runtime/debug"
