@@ -9,11 +9,11 @@ import (
 
 func TestNew(t *testing.T) {
 	defaultInfo := &Info{
-		Version:   "dev",
-		Commit:    "none",
-		Date:      "unknown",
-		TreeState: "none",
-		Project:   Project{},
+		version:   "dev",
+		commit:    "none",
+		date:      "unknown",
+		treeState: "none",
+		project:   Project{},
 	}
 
 	tests := []struct {
@@ -33,7 +33,7 @@ func TestNew(t *testing.T) {
 			},
 			expected: func() *Info {
 				info := *defaultInfo
-				info.Version = "v1.0.0"
+				info.version = "v1.0.0"
 				return &info
 			}(),
 		},
@@ -45,8 +45,8 @@ func TestNew(t *testing.T) {
 			},
 			expected: func() *Info {
 				info := *defaultInfo
-				info.Commit = "abc123"
-				info.Date = "2023-01-01"
+				info.commit = "abc123"
+				info.date = "2023-01-01"
 				return &info
 			}(),
 		},
@@ -60,26 +60,30 @@ func TestNew(t *testing.T) {
 			},
 			expected: func() *Info {
 				info := *defaultInfo
-				info.Version = "v2.0.0"
-				info.Commit = "def456"
-				info.Date = "2023-02-01"
-				info.TreeState = "clean"
+				info.version = "v2.0.0"
+				info.commit = "def456"
+				info.date = "2023-02-01"
+				info.treeState = "clean"
 				return &info
 			}(),
 		},
 		{
 			name: "Metadata with custom values",
 			options: []Option{
-				WithProject("CustomApp", "Custom Description", "https://customapp.com"),
-				WithASCIILogo("Custom ASCII Art"),
+				WithProject(Project{
+					Name:        "CustomApp",
+					Description: "Custom Description",
+					URL:         "https://customapp.com",
+					ASCIILogo:   "Custom ASCII Art",
+				}),
 			},
 			expected: func() *Info {
 				info := *defaultInfo
-				info.Project = Project{
-					Name:      "CustomApp",
-					Desc:      "Custom Description",
-					URL:       "https://customapp.com",
-					ASCIILogo: "Custom ASCII Art",
+				info.project = Project{
+					Name:        "CustomApp",
+					Description: "Custom Description",
+					URL:         "https://customapp.com",
+					ASCIILogo:   "Custom ASCII Art",
 				}
 				return &info
 			}(),
@@ -93,16 +97,16 @@ func TestNew(t *testing.T) {
 				t.Errorf("New() = nil, want %v", tt.expected)
 				return
 			}
-			assertEqual(t, tt.expected.Version, got.Version)
-			assertEqual(t, tt.expected.Version, got.Version)
-			assertEqual(t, tt.expected.Commit, got.Commit)
-			assertEqual(t, tt.expected.Date, got.Date)
-			assertEqual(t, tt.expected.TreeState, got.TreeState)
+			assertEqual(t, tt.expected.version, got.version)
+			assertEqual(t, tt.expected.version, got.version)
+			assertEqual(t, tt.expected.commit, got.commit)
+			assertEqual(t, tt.expected.date, got.date)
+			assertEqual(t, tt.expected.treeState, got.treeState)
 
-			assertEqual(t, tt.expected.Project.Name, got.Project.Name)
-			assertEqual(t, tt.expected.Project.Desc, got.Project.Desc)
-			assertEqual(t, tt.expected.Project.URL, got.Project.URL)
-			assertEqual(t, tt.expected.Project.ASCIILogo, got.Project.ASCIILogo)
+			assertEqual(t, tt.expected.project.Name, got.project.Name)
+			assertEqual(t, tt.expected.project.Description, got.project.Description)
+			assertEqual(t, tt.expected.project.URL, got.project.URL)
+			assertEqual(t, tt.expected.project.ASCIILogo, got.project.ASCIILogo)
 
 			assertNotEmpty(t, got.runtime.Goos)
 			assertNotEmpty(t, got.runtime.Goarch)

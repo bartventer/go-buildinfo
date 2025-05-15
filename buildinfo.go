@@ -14,11 +14,12 @@ import (
 	"text/tabwriter"
 )
 
+// Project implements the [Option] interface to set the project information.
 type Project struct {
-	Name      string
-	Desc      string
-	URL       string
-	ASCIILogo string
+	Name        string
+	Description string
+	URL         string
+	ASCIILogo   string
 }
 
 type runtimeEnv struct {
@@ -34,80 +35,80 @@ func (r *runtimeEnv) Platform() string {
 }
 
 type Info struct {
-	Version   string
-	Commit    string
-	Date      string
-	TreeState string
-	Project   Project
-	runtime   *runtimeEnv
+	version   string
+	commit    string
+	date      string
+	treeState string
+	project   Project
+
+	disableRuntime bool
+	runtime        *runtimeEnv
 }
 
-type Options struct {
-	*Info
-	DisableRuntime bool
+type Options Info
+
+type Option interface {
+	apply(*Options)
 }
 
-type Option func(*Options)
+type optionFunc func(*Options)
+
+func (f optionFunc) apply(opts *Options) {
+	f(opts)
+}
 
 func WithVersion(version string) Option {
-	return func(opts *Options) {
-		opts.Version = version
-	}
+	return optionFunc(func(opts *Options) {
+		opts.version = version
+	})
 }
 
 func WithCommit(commit string) Option {
-	return func(opts *Options) {
-		opts.Commit = commit
-	}
+	return optionFunc(func(opts *Options) {
+		opts.commit = commit
+	})
 }
 
 func WithDate(date string) Option {
-	return func(opts *Options) {
-		opts.Date = date
-	}
+	return optionFunc(func(opts *Options) {
+		opts.date = date
+	})
 }
 
 func WithTreeState(treeState string) Option {
-	return func(opts *Options) {
-		opts.TreeState = treeState
-	}
+	return optionFunc(func(opts *Options) {
+		opts.treeState = treeState
+	})
 }
 
-func WithProject(name, desc, url string) Option {
-	return func(opts *Options) {
-		opts.Project.Name = name
-		opts.Project.Desc = desc
-		opts.Project.URL = url
-	}
-}
-
-func WithASCIILogo(logo string) Option {
-	return func(opts *Options) {
-		opts.Project.ASCIILogo = logo
-	}
+func WithProject(project Project) Option {
+	return optionFunc(func(opts *Options) {
+		opts.project = project
+	})
 }
 
 func WithDisableRuntime() Option {
-	return func(opts *Options) {
-		opts.DisableRuntime = true
-	}
+	return optionFunc(func(opts *Options) {
+		opts.disableRuntime = true
+	})
 }
 
 // New creates a new Info instance with the provided options.
 func New(opts ...Option) *Info {
-	options := &Options{Info: new(Info)}
+	// options := &Options{Info: new(Info)}
+	options := new(Options)
 	for _, opt := range opts {
-		opt(options)
+		opt.apply(options)
 	}
 
 	info := &Info{
-		Version:   cmp.Or(options.Version, "dev"),
-		Commit:    cmp.Or(options.Commit, "none"),
-		Date:      cmp.Or(options.Date, "unknown"),
-		TreeState: cmp.Or(options.TreeState, "none"),
-		Project:   options.Project,
+		version:   cmp.Or(options.version, "dev"),
+		commit:    cmp.Or(options.commit, "none"),
+		date:      cmp.Or(options.date, "unknown"),
+		treeState: cmp.Or(options.treeState, "none"),
+		project:   options.project,
 	}
-	if !options.DisableRuntime {
+	if !options.disableRuntime {
 		bi, _ := debug.ReadBuildInfo()
 		info.runtime = &runtimeEnv{
 			Goos:      runtime.GOOS,
@@ -121,23 +122,23 @@ func New(opts ...Option) *Info {
 	return info
 }
 
-func (i *Info) String() string {
+func (i Info) String() string {
 	var sb strings.Builder
-	if i.Project.Name != "" {
-		if i.Project.ASCIILogo != "" {
-			sb.WriteString(i.Project.ASCIILogo)
+	if i.project.Name != "" {
+		if i.project.ASCIILogo != "" {
+			sb.WriteString(i.project.ASCIILogo)
 			sb.WriteString("\n")
 		}
-		sb.WriteString(fmt.Sprintf("%s: %s\n", i.Project.Name, i.Project.Desc))
-		sb.WriteString(fmt.Sprintf("%s\n", i.Project.URL))
+		sb.WriteString(fmt.Sprintf("%s: %s\n", i.project.Name, i.project.Description))
+		sb.WriteString(fmt.Sprintf("%s\n", i.project.URL))
 		sb.WriteString("\n")
 	}
 
 	w := tabwriter.NewWriter(&sb, 0, 0, 2, ' ', 0)
-	_, _ = fmt.Fprintf(w, "Version:\t%s\n", i.Version)
-	_, _ = fmt.Fprintf(w, "Commit:\t%s\n", i.Commit)
-	_, _ = fmt.Fprintf(w, "Date:\t%s\n", i.Date)
-	_, _ = fmt.Fprintf(w, "TreeState:\t%s\n", i.TreeState)
+	_, _ = fmt.Fprintf(w, "Version:\t%s\n", i.version)
+	_, _ = fmt.Fprintf(w, "Commit:\t%s\n", i.commit)
+	_, _ = fmt.Fprintf(w, "Date:\t%s\n", i.date)
+	_, _ = fmt.Fprintf(w, "TreeState:\t%s\n", i.treeState)
 
 	if i.runtime != nil {
 		_, _ = fmt.Fprintf(w, "GoVersion:\t%s\n", i.runtime.GoVersion)

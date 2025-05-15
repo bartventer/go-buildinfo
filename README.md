@@ -46,12 +46,12 @@ func main() {
         gobuildinfo.WithCommit(commit),
         gobuildinfo.WithDate(date),
         gobuildinfo.WithTreeState(treeState),
-        gobuildinfo.WithProject(
-            "BuildInfo Example", 
-            "A simple example of using go-buildinfo", 
-            "https://example.com",
-        ),
-        gobuildinfo.WithASCIILogo(logo),
+        gobuildinfo.WithProject(gobuildinfo.Project{
+            Name:        "BuildInfo Example",
+            Description: "A simple example of using go-buildinfo",
+            URL:         "https://example.com",
+            ASCIILogo:   logo,
+        }),
     )
 
     fmt.Println(info.String())

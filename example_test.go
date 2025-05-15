@@ -20,9 +20,13 @@ func ExampleInfo_String() {
 		gobuildinfo.WithCommit("a696fbbcb8ae009e3f88df2d7b00c09bea903c9e"),
 		gobuildinfo.WithDate("2023-01-01"),
 		gobuildinfo.WithTreeState("clean"),
-		gobuildinfo.WithProject("MyApp", "This is a sample app", "https://example.com"),
-		gobuildinfo.WithASCIILogo(logo),
 		gobuildinfo.WithDisableRuntime(), // Comment this line to include runtime info
+		gobuildinfo.WithProject(gobuildinfo.Project{
+			Name:        "MyApp",
+			Description: "This is a sample app",
+			URL:         "https://example.com",
+			ASCIILogo:   logo,
+		}),
 	)
 
 	fmt.Println(info.String())
